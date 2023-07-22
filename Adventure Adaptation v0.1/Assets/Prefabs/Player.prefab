@@ -449,7 +449,7 @@ MonoBehaviour:
   jumpCD: 0.25
   airMoveMultiplier: 0.3
   readyToJump: 1
-  gravityModifier: 0.03
+  gravityModifier: 0.015
   jumpKey: 32
 --- !u!54 &5459898634079413773
 Rigidbody:
