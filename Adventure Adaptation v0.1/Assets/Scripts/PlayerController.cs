@@ -8,24 +8,26 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     public LayerMask whatIsGround;
 
-    [Header("Variables")] //note playerRb weight is set to 80kg
+    [Header("Variables")]
     //basic movement
     private Rigidbody playerRB;
     private Vector3 moveDirection;
     private float vInput;
     private float hInput;
 
+    private float playerMass = 80;
     private float playerHeight;
     private bool grounded;
 
-    public float speed = 5.0f;
-    public float groundDrag = 5.0f;
+    public float speed = 7.0f;
+    public float groundDrag = 3.5f;
 
     //Jumping
     public float jumpForce = 600.0f;
     public float jumpCD = .25f;
-    public float airMoveMultiplier = .4f;
+    public float airMoveMultiplier = .3f;
     public bool readyToJump = true;
+    public float gravityModifier = .3f;
 
 
     [Header("KEYBINDS")]
@@ -38,6 +40,8 @@ public class PlayerController : MonoBehaviour
         playerRB = GetComponent<Rigidbody>();
         playerRB.freezeRotation = true;
         playerHeight = GetComponent<BoxCollider>().size.y;
+        Physics.gravity *= 0; //turn off gravity
+
     }
 
     private void Update()
@@ -60,6 +64,8 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         DirectionalMove(); //move character based on PlayerInput in Update
+        GravityAcceleration(); //add a graivty accelerate force
+                               //(physics gravity isnt accelerating but constant based on my understanding)
     }
 
 
@@ -87,11 +93,11 @@ public class PlayerController : MonoBehaviour
         //add speed in that direction
         if (grounded)
         {
-            playerRB.AddForce(moveDirection.normalized * speed * 800f, ForceMode.Force);
+            playerRB.AddForce(moveDirection.normalized * speed * 10f * playerMass, ForceMode.Force);
         }
         else //not on ground (harder to change directions in air)
         {
-            playerRB.AddForce(moveDirection.normalized * speed * 800f * airMoveMultiplier, ForceMode.Force);
+            playerRB.AddForce(moveDirection.normalized * speed * 10f * playerMass * airMoveMultiplier, ForceMode.Force);
         }
         
 
@@ -131,4 +137,10 @@ public class PlayerController : MonoBehaviour
         readyToJump = true;
     }
 
+
+    void GravityAcceleration()
+    {
+        float gravity = 9.81f * gravityModifier;
+        playerRB.AddForce(Vector3.down * playerMass * gravity, ForceMode.Acceleration);
+    }
 }
