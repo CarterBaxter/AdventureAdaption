@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
     public float gravityModifier = .015f;
 
 
+
+    public float velocity;
+
     [Header("KEYBINDS")]
     public KeyCode jumpKey = KeyCode.Space;
 
@@ -59,6 +62,8 @@ public class PlayerController : MonoBehaviour
         {
             playerRB.drag = 0; //no drag in air
         }
+        velocity = playerRB.velocity.x * playerRB.velocity.x + playerRB.velocity.z * playerRB.velocity.z;
+        velocity = Mathf.Sqrt(velocity);
     }
 
     void FixedUpdate()
