@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     public float jumpCD = .25f;
     public float airMoveMultiplier = .3f;
     public bool readyToJump = true;
-    public float gravityModifier = .3f;
+    public float gravityModifier = .015f;
 
 
     [Header("KEYBINDS")]
