@@ -141,6 +141,6 @@ public class PlayerController : MonoBehaviour
     void GravityAcceleration()
     {
         float gravity = 9.81f * gravityModifier;
-        playerRB.AddForce(Vector3.down * playerMass * gravity, ForceMode.Acceleration);
+        playerRB.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
     }
 }

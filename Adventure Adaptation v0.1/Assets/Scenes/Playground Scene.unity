@@ -1238,7 +1238,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: gravityModifier
-      value: 0.015
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413775, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: m_RootOrder
