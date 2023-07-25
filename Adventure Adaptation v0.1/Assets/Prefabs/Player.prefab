@@ -97,8 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 616819ccdf519464aad422cd0d7eb0bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivityX: 300
-  sensitivityY: 300
+  controlVars: {fileID: 0}
+  baseSensitivityX: 300
+  baseSensitivityY: 300
   PlayerOrientation: {fileID: 5459898634079413775}
 --- !u!1 &5459898633507160378
 GameObject:
@@ -426,6 +427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb6a56f0e1c03364ca37a159fbed545c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlVars: {fileID: 0}
   whatIsGround:
     serializedVersion: 2
     m_Bits: 128
@@ -437,7 +439,6 @@ MonoBehaviour:
   readyToJump: 1
   gravityModifier: 1.5
   velocity: 0
-  jumpKey: 32
 --- !u!54 &5459898634079413773
 Rigidbody:
   m_ObjectHideFlags: 0
