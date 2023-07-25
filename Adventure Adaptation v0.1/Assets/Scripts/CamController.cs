@@ -6,9 +6,8 @@ using UnityEngine;
 public class CamController : MonoBehaviour
 {
     public ControlVariables controlVars;
-    public float baseSensitivityX;
-    public float baseSensitivityY;
-    public float sensMod;
+    public float baseSensitivityX = 300;
+    public float baseSensitivityY = 300;
 
     public Transform PlayerOrientation;
 
@@ -18,7 +17,6 @@ public class CamController : MonoBehaviour
     
     void Start()
     {
-        sensMod = controlVars.sensitivity;
         //lock cursor and turn invisible
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -28,8 +26,8 @@ public class CamController : MonoBehaviour
     void Update()
     {
         //get mouse inputs and multiply them by mouse sensitivity in both directions and deltaTime
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * baseSensitivityX * sensMod;
-        float MouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * baseSensitivityY * sensMod;
+        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * baseSensitivityX * controlVars.sensitivity;
+        float MouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * baseSensitivityY * controlVars.sensitivity;
 
         //set x and yRotation variables and clamp vertical look
         yRotation += mouseX;

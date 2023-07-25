@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ControlVariables : MonoBehaviour
 {
-    public float sensitivity = 1;
+    public float sensitivity = 1; //when implementing slider remember to not allow negatives
 
     [Header("KEYBINDS")]
     public KeyCode jumpKey = KeyCode.Space;
