@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     private bool grounded;
 
     public float speed = 7.0f;
-    public float groundDrag = 1.5f;
+    public float groundDrag = 2.0f;
 
     //Jumping
     public float jumpForce = 600.0f;
@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
     {
         playerRB = GetComponent<Rigidbody>();
         playerRB.freezeRotation = true;
-        playerHeight = GetComponent<BoxCollider>().size.y;
+        playerHeight = GetComponent<CapsuleCollider>().height;
         Physics.gravity *= 0; //turn off gravity
 
     }
