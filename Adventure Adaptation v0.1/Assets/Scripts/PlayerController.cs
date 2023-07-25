@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("References")]
+    public ControlVariables controlVars;
     public LayerMask whatIsGround;
 
     [Header("Variables")]
@@ -33,8 +34,6 @@ public class PlayerController : MonoBehaviour
 
     public float velocity;
 
-    [Header("KEYBINDS")]
-    public KeyCode jumpKey = KeyCode.Space;
 
 
 
@@ -83,7 +82,7 @@ public class PlayerController : MonoBehaviour
         hInput = Input.GetAxisRaw("Horizontal");
 
         //get jump input
-        if (Input.GetKey(jumpKey) && grounded && readyToJump)
+        if (Input.GetKey(controlVars.jumpKey) && grounded && readyToJump)
         { 
             readyToJump = false;
             Jump();
