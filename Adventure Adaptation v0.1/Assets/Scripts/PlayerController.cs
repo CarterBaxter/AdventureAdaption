@@ -20,14 +20,14 @@ public class PlayerController : MonoBehaviour
     private bool grounded;
 
     public float speed = 7.0f;
-    public float groundDrag = 3.5f;
+    public float groundDrag = 1.5f;
 
     //Jumping
     public float jumpForce = 600.0f;
     public float jumpCD = .25f;
     public float airMoveMultiplier = .3f;
     public bool readyToJump = true;
-    public float gravityModifier = .015f;
+    public float gravityModifier = 1.5f;
 
 
 
