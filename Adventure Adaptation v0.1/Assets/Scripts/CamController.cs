@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class CamController : MonoBehaviour
 {
     public ControlVariables controlVars;
+    public Camera mainCam;
+    public Transform cameraPosition;
     public float baseSensitivityX = 300;
     public float baseSensitivityY = 300;
 
@@ -23,7 +26,7 @@ public class CamController : MonoBehaviour
     }
 
     
-    void Update()
+    void LateUpdate()
     {
         //get mouse inputs and multiply them by mouse sensitivity in both directions and deltaTime
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * baseSensitivityX * controlVars.sensitivity;
@@ -37,5 +40,10 @@ public class CamController : MonoBehaviour
         //transform the head and the body
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         PlayerOrientation.rotation = Quaternion.Euler(0, yRotation, 0);
+
+        mainCam.transform.position = cameraPosition.position;
+        mainCam.transform.rotation = cameraPosition.rotation;
     }
+
+   
 }
