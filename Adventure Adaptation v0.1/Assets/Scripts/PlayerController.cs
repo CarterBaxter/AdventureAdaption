@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     public ControlVariables controlVars;
     public LayerMask whatIsGround;
+    public TextMeshProUGUI velocityText;
 
     [Header("Variables")]
     //basic movement
@@ -20,8 +22,8 @@ public class PlayerController : MonoBehaviour
     private float playerHeight;
     private bool grounded;
 
-    public float speed = 7.0f;
     public float groundDrag = 2.0f;
+
 
     //Jumping
     public float jumpForce = 600.0f;
@@ -31,9 +33,20 @@ public class PlayerController : MonoBehaviour
     public float gravityModifier = 1.5f;
 
 
-
+    //speeds
+    public enum MovingStates
+    {
+        sprinting,
+        walking,
+        croching
+    }
+    [Header("Move Speed")]
     public float velocity;
-
+    public MovingStates movingState = MovingStates.walking;
+    public float crouchSpeed = 3.0f;
+    public float walkSpeed = 5.0f;
+    public float sprintSpeed = 10.0f;
+    private float currentMaxSpeed;
 
 
 
@@ -46,8 +59,10 @@ public class PlayerController : MonoBehaviour
 
     }
 
+
     private void Update()
     {
+        MoveStateInput();
         SpeedControl();
         PlayerInput(); //get directional input
         grounded = GroundCheck(); //check if grounded
@@ -63,9 +78,10 @@ public class PlayerController : MonoBehaviour
         }
         velocity = playerRB.velocity.x * playerRB.velocity.x + playerRB.velocity.z * playerRB.velocity.z;
         velocity = Mathf.Sqrt(velocity);
+        velocityText.text = $"Velocity: {Mathf.Round(velocity)}";
     }
 
-    void FixedUpdate()
+    void FixedUpdate() 
     {
         DirectionalMove(); //move character based on PlayerInput in Update
         GravityAcceleration(); //add a graivty accelerate force
@@ -94,14 +110,15 @@ public class PlayerController : MonoBehaviour
     {
         //get new move direction from transform and input
         moveDirection = transform.forward * vInput + transform.right * hInput;
+        
         //add speed in that direction
         if (grounded)
         {
-            playerRB.AddForce(moveDirection.normalized * speed * 10f * playerMass, ForceMode.Force);
+            playerRB.AddForce(moveDirection.normalized * currentMaxSpeed * 10f * playerMass, ForceMode.Force);
         }
         else //not on ground (harder to change directions in air)
         {
-            playerRB.AddForce(moveDirection.normalized * speed * 10f * playerMass * airMoveMultiplier, ForceMode.Force);
+            playerRB.AddForce(moveDirection.normalized * currentMaxSpeed * 10f * playerMass * airMoveMultiplier, ForceMode.Force);
         }
         
 
@@ -116,13 +133,33 @@ public class PlayerController : MonoBehaviour
         return Physics.Raycast(transform.position, Vector3.down, raycastLength, whatIsGround);
     }
 
+    private void MoveStateInput() //sets currentmaxspeed according to moving state determined by inputs
+    {
+        if (Input.GetKey(controlVars.crouchKey)) 
+        {
+            movingState = MovingStates.croching;
+            currentMaxSpeed = crouchSpeed;
+        }
+        else if (Input.GetKey(controlVars.sprintKey))
+        {
+            movingState = MovingStates.sprinting;
+            currentMaxSpeed = sprintSpeed;
+            //TO DO STAMINA
+        }
+        else
+        {
+            movingState = MovingStates.walking;
+            currentMaxSpeed = walkSpeed;
+        }
+    }
+
     void SpeedControl()
-    { 
+    {
         Vector3 currVelocity = new Vector3(playerRB.velocity.x, 0f, playerRB.velocity.z);
 
-        if (currVelocity.magnitude > speed)
+        if (currVelocity.magnitude > currentMaxSpeed)
         {
-            Vector3 ctrlVelocity = currVelocity.normalized * speed;
+            Vector3 ctrlVelocity = currVelocity.normalized * currentMaxSpeed;
             playerRB.velocity = new Vector3(ctrlVelocity.x, playerRB.velocity.y, ctrlVelocity.z);
             //retain y verlocity but control x and z velocity to retain max speed.
         }
