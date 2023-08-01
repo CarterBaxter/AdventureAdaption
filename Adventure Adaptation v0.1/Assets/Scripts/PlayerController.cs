@@ -63,6 +63,14 @@ public class PlayerController : MonoBehaviour
     private float startColliderRadius;
     private float crouchColliderRadius = .4f; //so can fit under 1 unit areas
 
+    [Header("Slope Handling")]
+    public float maxSlopeAngle;
+    private RaycastHit slopeHit;
+    private bool existingSlope = false;
+
+    public bool onSlope = false;
+    public float pubAngle;
+
 
     void Start()
     {
@@ -71,7 +79,7 @@ public class PlayerController : MonoBehaviour
         playerRB.freezeRotation = true;
         capsuleCollider = GetComponent<CapsuleCollider>();
         playerHeight = capsuleCollider.height;
-        Physics.gravity *= 0; //turn off gravity
+        Physics.gravity *= 0; //turn off gravity using my own
         startYScale = transform.localScale.y;
         startColliderRadius = capsuleCollider.radius;
     }
@@ -136,17 +144,29 @@ public class PlayerController : MonoBehaviour
     {
         //get new move direction from transform and input
         moveDirection = transform.forward * vInput + transform.right * hInput;
+
         
-        //add speed in that direction
-        if (grounded)
+        if (OnSlope() && !existingSlope)
         {
-            playerRB.AddForce(moveDirection.normalized * currentMaxSpeed * 10f * playerMass, ForceMode.Force);
+            playerRB.AddForce(GetSlopeMoveDirection() * currentMaxSpeed * 10f * playerMass, ForceMode.Force);
+
+            if (playerRB.velocity.y > 0)
+            {
+                playerRB.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
         }
-        else //not on ground (harder to change directions in air)
+        else //on flat ground
         {
-            playerRB.AddForce(moveDirection.normalized * currentMaxSpeed * 10f * playerMass * airMoveMultiplier, ForceMode.Force);
+            //add speed in that direction
+            if (grounded)
+            {
+                playerRB.AddForce(moveDirection.normalized * currentMaxSpeed * 10f * playerMass, ForceMode.Force);
+            }
+            else //not on ground (harder to change directions in air)
+            {
+                playerRB.AddForce(moveDirection.normalized * currentMaxSpeed * 10f * playerMass * airMoveMultiplier, ForceMode.Force);
+            }
         }
-        
 
     }
 
@@ -166,6 +186,26 @@ public class PlayerController : MonoBehaviour
         //Raycast( Vector3 Origin, Vector3 Position, float MaxDistance, int LayerMask)
         //Returns true if hits collider with certain mask
         return !Physics.Raycast(transform.position, Vector3.up, raycastLength);
+    }
+
+    bool OnSlope()
+    {
+        float raycastLength = playerHeight / 2.0f + .3f;
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, raycastLength))
+        {
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            onSlope = angle < maxSlopeAngle && angle != 0;
+            pubAngle = angle;
+            return angle < maxSlopeAngle && angle != 0;
+        }
+        pubAngle = 0;
+        onSlope = false;
+        return false;
+    }
+
+    Vector3 GetSlopeMoveDirection()
+    {
+        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized; 
     }
 
 
@@ -219,18 +259,30 @@ public class PlayerController : MonoBehaviour
 
     void SpeedControl()
     {
-        Vector3 currVelocity = new Vector3(playerRB.velocity.x, 0f, playerRB.velocity.z);
-
-        if (currVelocity.magnitude > currentMaxSpeed)
+        if (OnSlope() && !existingSlope)
         {
-            Vector3 ctrlVelocity = currVelocity.normalized * currentMaxSpeed;
-            playerRB.velocity = new Vector3(ctrlVelocity.x, playerRB.velocity.y, ctrlVelocity.z);
-            //retain y verlocity but control x and z velocity to retain max speed.
+            if (playerRB.velocity.magnitude > currentMaxSpeed)
+            {
+                playerRB.velocity = playerRB.velocity.normalized * currentMaxSpeed;
+            }
+        }
+        else //not on slope
+        {
+
+            Vector3 currVelocity = new Vector3(playerRB.velocity.x, 0f, playerRB.velocity.z);
+
+            if (currVelocity.magnitude > currentMaxSpeed)
+            {
+                Vector3 ctrlVelocity = currVelocity.normalized * currentMaxSpeed;
+                playerRB.velocity = new Vector3(ctrlVelocity.x, playerRB.velocity.y, ctrlVelocity.z);
+                //retain y verlocity but control x and z velocity to retain max speed.
+            }
         }
     }
 
     void Jump()
     {
+        existingSlope = true;
         //reset Y velocity so jumps stay consistent
         playerRB.velocity = new Vector3(playerRB.velocity.x, 0f, playerRB.velocity.z);
 
@@ -240,13 +292,17 @@ public class PlayerController : MonoBehaviour
     void ResetJump()
     {
         readyToJump = true;
+        existingSlope = false;
     }
 
 
     void GravityAcceleration()
     {
-        float gravity = 9.81f * gravityModifier;
-        playerRB.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+        if (!OnSlope()) //on slopes needs no gravity
+        {
+            float gravity = 9.81f * gravityModifier;
+            playerRB.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+        }
     }
 
     IEnumerator StaminaCoroutine()

@@ -2192,6 +2192,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2070111211, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2070111211, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 13400000, guid: 002b2b894801a5d43a5feca7ed944ae7, type: 2}
@@ -2202,6 +2206,10 @@ PrefabInstance:
     - target: {fileID: 5459898634079413770, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
+      propertyPath: jumpForce
+      value: 1200
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: walkSpeed
@@ -2239,6 +2247,14 @@ PrefabInstance:
       propertyPath: StaminaSlider
       value: 
       objectReference: {fileID: 1503876459}
+    - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
+      propertyPath: maxSlopeAngle
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
+      propertyPath: gravityModifier
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413775, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: m_RootOrder
       value: 3
