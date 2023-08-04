@@ -26,15 +26,15 @@ public class PlayerController : MonoBehaviour
     private float playerHeight;
     private bool grounded;
 
-    public float groundDrag = 2.0f;
+    public float groundDrag = 5.0f;
 
 
     //Jumping
-    public float jumpForce = 600.0f;
+    public float jumpForce = 1000.0f;
     public float jumpCD = .25f;
     public float airMoveMultiplier = .3f;
     public bool readyToJump = true;
-    public float gravityModifier = 1.5f;
+    public float gravityModifier = 3f;
 
 
     //speeds
@@ -55,21 +55,23 @@ public class PlayerController : MonoBehaviour
 
     public float maxStamina = 10f;
     public float currStamina = 10f;
+    public float staminaRegenModifier = 1.5f;
+    public float staminaRegenWait = 1.0f;
     private Coroutine startStamina;
     private Coroutine regenStamina;
 
     private float startYScale;
     private float crouchYScale = 0.4f;
-    private float startColliderRadius;
-    private float crouchColliderRadius = .4f; //so can fit under 1 unit areas
+    private float startColliderRadius; //start collider radius is now .5f rn so can fit through 1 x 1 tunnel
+    
 
     [Header("Slope Handling")]
-    public float maxSlopeAngle;
+    public float maxSlopeAngle = 40.0f;
     private RaycastHit slopeHit;
     private bool existingSlope = false;
 
     public bool onSlope = false;
-    public float pubAngle;
+    public float pubAngle; //angle currently on
 
 
     void Start()
@@ -182,10 +184,11 @@ public class PlayerController : MonoBehaviour
     bool CanStandCheck()
     {
         float raycastLength = playerHeight / 2; //half the start height looking above
+        Ray upwardsRay = new Ray(transform.position, Vector3.up);
 
         //Raycast( Vector3 Origin, Vector3 Position, float MaxDistance, int LayerMask)
         //Returns true if hits collider with certain mask
-        return !Physics.Raycast(transform.position, Vector3.up, raycastLength);
+        return !Physics.SphereCast(upwardsRay, startColliderRadius, raycastLength);
     }
 
     bool OnSlope()
@@ -214,23 +217,21 @@ public class PlayerController : MonoBehaviour
     private void MoveStateInput() //sets currentmaxspeed according to moving state determined by inputs
     {
 
-        if (Input.GetKeyDown(controlVars.crouchKey) && grounded) //so cant force down while in air
+        if (Input.GetKeyDown(controlVars.crouchKey) && grounded && movingState == MovingStates.walking) //so cant force down while in air
         {
             movingState = MovingStates.croching;
             currentMaxSpeed = crouchSpeed;
 
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
             playerRB.AddForce(Vector3.down * 200f, ForceMode.Impulse);
-            capsuleCollider.radius = crouchColliderRadius;
         }
-        else if (Input.GetKeyUp(controlVars.crouchKey) && CanStandCheck())
+        else if (Input.GetKeyUp(controlVars.crouchKey) && CanStandCheck() && movingState == MovingStates.croching)
         {
             movingState = MovingStates.walking;
             currentMaxSpeed = walkSpeed;
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
-            capsuleCollider.radius = startColliderRadius;
         }
-        else if (Input.GetKeyDown(controlVars.sprintKey) && currStamina > 0)
+        else if (Input.GetKeyDown(controlVars.sprintKey) && currStamina > 0 && movingState == MovingStates.walking)
         {
             movingState = MovingStates.sprinting;
             currentMaxSpeed = sprintSpeed;
@@ -239,7 +240,7 @@ public class PlayerController : MonoBehaviour
             { StopCoroutine(regenStamina); }
             startStamina = StartCoroutine("StaminaCoroutine");
         }
-        else if (Input.GetKeyUp(controlVars.sprintKey))
+        else if (Input.GetKeyUp(controlVars.sprintKey) && movingState == MovingStates.sprinting)
         {
             movingState = MovingStates.walking;
             currentMaxSpeed = walkSpeed;
@@ -309,7 +310,7 @@ public class PlayerController : MonoBehaviour
     {
         while (currStamina > 0)
         {
-            if (!gameManager.paused) 
+            if (!gameManager.paused && moveDirection != Vector3.zero)  //if game active and is inputing movement
                 currStamina -= Time.deltaTime;
             yield return null;
         }
@@ -317,10 +318,11 @@ public class PlayerController : MonoBehaviour
     }
     IEnumerator RegenStaminaCoroutine()
     {
+        yield return new WaitForSeconds(staminaRegenWait);
         while (currStamina < maxStamina)
         {
             if (!gameManager.paused)
-                currStamina += Time.deltaTime;
+                currStamina += Time.deltaTime * staminaRegenModifier;
             yield return null;
         }       
         currStamina = maxStamina;
