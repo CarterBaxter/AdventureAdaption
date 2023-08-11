@@ -2533,7 +2533,7 @@ MonoBehaviour:
   sensitivity: 1
   jumpKey: 32
   sprintKey: 304
-  crouchKey: 306
+  crouchKey: 99
 --- !u!1001 &1542058652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3764,7 +3764,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: jumpForce
-      value: 1000
+      value: 1200
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: walkSpeed
@@ -3772,7 +3772,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: groundDrag
-      value: 5
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5459898634079413772, guid: d94ab8a463eeff4489637ea47b14a8bc, type: 3}
       propertyPath: maxStamina

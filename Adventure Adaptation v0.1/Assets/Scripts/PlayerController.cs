@@ -26,11 +26,11 @@ public class PlayerController : MonoBehaviour
     private float playerHeight;
     private bool grounded;
 
-    public float groundDrag = 5.0f;
+    public float groundDrag = 8.0f;
 
 
     //Jumping
-    public float jumpForce = 1000.0f;
+    public float jumpForce = 1200.0f;
     public float jumpCD = .25f;
     public float airMoveMultiplier = .3f;
     public bool readyToJump = true;
@@ -172,8 +172,11 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    bool GroundCheck()
+    bool GroundCheck() 
     {
+        //restricts standing when under object part of the whatIsGround mask and is
+        //too close to the ground for the player to fit standing up
+
         float raycastLength = playerHeight / 2 + .2f; //half the height, plus a little.
 
         //Raycast( Vector3 Origin, Vector3 Position, float MaxDistance, int LayerMask)
@@ -186,9 +189,9 @@ public class PlayerController : MonoBehaviour
         float raycastLength = playerHeight / 2; //half the start height looking above
         Ray upwardsRay = new Ray(transform.position, Vector3.up);
 
-        //Raycast( Vector3 Origin, Vector3 Position, float MaxDistance, int LayerMask)
+        //SphereCast( Ray diretionalRay, float sphereRadius, float MaxDistance, int LayerMask)
         //Returns true if hits collider with certain mask
-        return !Physics.SphereCast(upwardsRay, startColliderRadius, raycastLength);
+        return !Physics.SphereCast(upwardsRay, startColliderRadius, raycastLength, whatIsGround);
     }
 
     bool OnSlope()
@@ -227,6 +230,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKeyUp(controlVars.crouchKey) && CanStandCheck() && movingState == MovingStates.croching)
         {
+            Debug.Log($"stadable: {CanStandCheck()}");
             movingState = MovingStates.walking;
             currentMaxSpeed = walkSpeed;
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
@@ -249,10 +253,17 @@ public class PlayerController : MonoBehaviour
             { StopCoroutine(startStamina); }
             regenStamina = StartCoroutine("RegenStaminaCoroutine");
         }
-        else if (currStamina <= 0)
+        else if (currStamina <= 0 && movingState == MovingStates.sprinting)
         {
             movingState = MovingStates.walking;
             currentMaxSpeed = walkSpeed;
+
+            if (startStamina != null)
+            { StopCoroutine(startStamina); }
+            regenStamina = StartCoroutine("RegenStaminaCoroutine");
+        }
+        else {
+            Debug.Log($"stadable: {CanStandCheck()}");
         }
 
 
